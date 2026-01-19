@@ -47,7 +47,7 @@ The plugin connects to Buildkite's [remote MCP server](https://buildkite.com/doc
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/buildkite/buildkite-claude-plugin.git
+   git clone https://github.com/mcncl/buildkite-claude-plugin.git
    ```
 
 2. Run Claude Code with the plugin:
