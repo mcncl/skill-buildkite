@@ -1,0 +1,10 @@
+{
+  "name": "buildkite",
+  "description": "Debug builds, analyze pipeline issues, and troubleshoot agents with Buildkite",
+  "version": "0.1.0",
+  "author": {
+    "name": "Ben McNicholl"
+  },
+  "repository": "https://github.com/mcncl/buildkite-claude-plugin",
+  "license": "MIT"
+}
