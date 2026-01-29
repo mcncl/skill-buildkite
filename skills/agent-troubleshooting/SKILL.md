@@ -1,123 +1,216 @@
 ---
 name: agent-troubleshooting
-description: Troubleshoots Buildkite agent issues including jobs stuck waiting for agents, agent connectivity problems, and queue configuration. Use when jobs aren't being picked up or there are agent-related problems.
+description: |
+  Troubleshoots Buildkite agent issues. Use when user asks:
+  - "My build is stuck waiting for an agent"
+  - "Jobs aren't being picked up"
+  - "Why is my build stuck in scheduled?"
+  - "Agent not running my job"
+  - "Queue issues"
+  - "No agents available"
 ---
 
 # Agent Troubleshooting
 
-You are helping troubleshoot Buildkite agent issues - jobs not being picked up, agent connectivity, or queue configuration problems.
+Diagnose why jobs aren't being picked up by agents.
+
+## Available MCP Tools
+
+| Tool | Purpose |
+|------|---------|
+| `buildkite_get_build` | Get job details including agent requirements |
+| `buildkite_list_clusters` | List available clusters |
+| `buildkite_list_cluster_queues` | List queues in a cluster |
+| `buildkite_get_cluster_queue` | Get queue stats (agent count, jobs waiting) |
+
+## Input Parsing
+
+User typically describes a symptom:
+
+| Input | Likely Issue |
+|-------|--------------|
+| "build stuck" | Job in scheduled state |
+| "waiting for agent" | No matching agents |
+| "job not starting" | Agent configuration mismatch |
+| "queue problem" | Queue doesn't exist or no agents |
+
+Get the build number/URL to investigate.
 
 ## Approach
 
-1. **Understand the Symptom**
-   - Jobs stuck in "scheduled" state = no agent picking them up
-   - Jobs stuck in "assigned" state = agent accepted but not starting
-   - Jobs failing immediately = agent issue or configuration problem
+1. **Get the build** with `buildkite_get_build`
+   - Find the stuck job
+   - Note its state (scheduled, assigned, etc.)
+   - Extract agent query rules (queue, tags)
 
-2. **Check Cluster and Queue Configuration**
-   - Use `buildkite_list_clusters` to see available clusters
-   - Use `buildkite_list_cluster_queues` to see queues in each cluster
-   - Compare job's required queue/tags with available queues
+2. **Check cluster/queue configuration**
+   - List clusters with `buildkite_list_clusters`
+   - List queues with `buildkite_list_cluster_queues`
+   - Get queue stats with `buildkite_get_cluster_queue`
 
-3. **Analyze Job Agent Requirements**
-   - Use `buildkite_get_build` to see job details
-   - Check the `agent_query_rules` or agent tags required by the job
-   - Look for queue targeting: `queue=deploy`, `queue=default`
+3. **Compare requirements vs availability**
+   - What does the job require?
+   - What agents/queues exist?
+   - Where's the mismatch?
 
-4. **Check for Common Issues**
+4. **Provide diagnosis and fix**
 
-### Jobs Not Being Picked Up
+## Job States for Agent Issues
 
-**Queue Mismatch**
-- Job requires `queue=special` but no agents are in that queue
-- Check pipeline YAML for `agents:` configuration
-- Verify queue exists with `buildkite_list_cluster_queues`
+| State | Meaning | Indicates |
+|-------|---------|-----------|
+| `scheduled` | Waiting for agent | No matching agent available |
+| `assigned` | Agent accepted | Agent has it but not starting |
+| `accepted` | Agent starting | Should run soon |
 
-**Tag Mismatch**
-- Job requires specific tags like `docker=true` or `os=linux`
-- No agents match ALL required tags (tags are AND-ed)
-- Check what tags are configured on available agents
+Jobs stuck in `scheduled` = agent matching problem.
 
-**No Agents Running**
-- Queue exists but no agents are connected
-- Check Buildkite Agents page or use cluster APIs
-- Verify agent is running and can reach Buildkite
+## Common Issues
 
-**Agent Concurrency Exhausted**
-- Agents exist but are all busy
-- Check `spawn` setting on agents
-- Consider scaling up or adjusting parallelism
+### 1. Queue Mismatch
 
-### Agent Connectivity Issues
+**Symptom**: Job stuck in scheduled
+**Cause**: Job requires queue that doesn't exist or has no agents
 
-**Agent Disconnecting**
-- Network instability between agent and Buildkite
-- Agent process crashing or being killed
-- Resource exhaustion on agent host (memory, disk)
-
-**Agent Not Starting Jobs**
-- Agent hooks failing (environment, pre-command)
-- Plugin installation failures
-- File system permissions
-
-### Configuration Issues
-
-**Pipeline Agent Rules**
 ```yaml
-# Global agent rules (apply to all steps)
+# Pipeline requires:
 agents:
   queue: "deploy"
 
-# Per-step agent rules
-steps:
-  - command: "deploy.sh"
-    agents:
-      queue: "deploy"
-      cloud: "aws"
+# But no agents are in the "deploy" queue
 ```
 
-**Agent Tag Format**
-- Tags are key=value or just key (boolean)
-- Multiple tags are AND conditions
-- Use `*` wildcard for partial matching: `instance-type=m5.*`
+**Diagnosis**:
+```
+Job requires: queue=deploy
+Available queues: default (5 agents), build (10 agents)
+❌ No "deploy" queue exists
+```
 
-## Diagnostic Steps
+**Fix**: Add agents to the deploy queue, or change pipeline to use existing queue.
 
-1. **List available queues**
-   ```
-   Use buildkite_list_cluster_queues to see all queues
-   ```
+### 2. Tag Mismatch
 
-2. **Check queue details**
-   ```
-   Use buildkite_get_cluster_queue for specific queue stats
-   ```
+**Symptom**: Job stuck in scheduled
+**Cause**: Job requires tags no agent has
 
-3. **Compare with job requirements**
-   - Get the build details
-   - Look at failed/waiting job's agent configuration
-   - Match against available queues
+```yaml
+# Pipeline requires:
+agents:
+  queue: "default"
+  docker: "true"
+  os: "linux"
+
+# Agents have docker=true but os=macos
+```
+
+**Diagnosis**:
+```
+Job requires: queue=default, docker=true, os=linux
+Available agents in default:
+  - agent-1: docker=true, os=macos
+  - agent-2: docker=true, os=macos
+❌ No agent matches os=linux
+```
+
+**Fix**: Add Linux agents, or remove the os requirement.
+
+### 3. No Agents Running
+
+**Symptom**: Job stuck in scheduled
+**Cause**: Queue exists but no agents connected
+
+**Diagnosis**:
+```
+Job requires: queue=deploy
+Queue "deploy" exists but has 0 connected agents
+```
+
+**Fix**: Start agents, check agent host health, verify network connectivity.
+
+### 4. All Agents Busy
+
+**Symptom**: Job stuck in scheduled longer than usual
+**Cause**: Agents exist but at capacity
+
+**Diagnosis**:
+```
+Job requires: queue=default
+Queue "default": 3 agents, 15 jobs waiting
+Average wait time: 12 minutes
+```
+
+**Fix**: Scale up agents, reduce parallelism, or wait.
+
+### 5. Agent Assigned But Not Starting
+
+**Symptom**: Job stuck in assigned state
+**Cause**: Agent accepted job but can't start it
+
+**Possible causes**:
+- Agent hooks failing (environment, pre-command)
+- Plugin installation failing
+- Disk space issues
+- Agent process problems
+
+**Fix**: Check agent logs on the host machine.
 
 ## Response Format
 
-1. **Issue Identified**: What's preventing job execution
-2. **Agent Configuration**: What the job requires vs what's available
-3. **Root Cause**: Specific mismatch or problem
-4. **Resolution**: Steps to fix
-   - Immediate: How to get this build working
-   - Long-term: How to prevent recurrence
+```
+## Agent Issue Diagnosed
 
-## Common Resolutions
+**Build**: #456
+**Stuck Job**: "Run Tests"
+**State**: scheduled (waiting for agent)
 
-- **Wrong queue**: Update pipeline YAML or add agents to queue
-- **Missing tags**: Add tags to agents or remove requirement from job
-- **No agents**: Start agents or check agent host health
-- **All agents busy**: Scale up agents or reduce parallelism
-- **Agent crashing**: Check agent logs, hooks, and host resources
+### Job Requirements
+- Queue: `deploy`
+- Tags: `docker=true`
 
-## Important Notes
+### Available Resources
+- Queue `deploy`: ❌ Does not exist
+- Queue `default`: 5 agents (none match)
 
-- Agent issues often manifest as jobs stuck in "scheduled" state
-- Always verify the queue/tags in the pipeline match available agents
-- Consider that dynamic pipelines might change agent requirements
-- Cluster configuration affects which queues are available
+### Root Cause
+The job requires `queue=deploy` but no such queue exists in your cluster.
+
+### Fix
+**Immediate**: Change the pipeline to use `queue=default`:
+```yaml
+agents:
+  queue: "default"
+  docker: "true"
+```
+
+**Long-term**: Create a `deploy` queue and add dedicated agents for deployments.
+```
+
+## Diagnostic Commands
+
+When explaining fixes, reference these Buildkite agent commands:
+
+```bash
+# Check agent status
+buildkite-agent status
+
+# See what queues/tags an agent has
+buildkite-agent start --tags "queue=deploy,docker=true"
+
+# Check agent logs
+journalctl -u buildkite-agent
+```
+
+## Example Interaction
+
+```
+User: My build is stuck waiting for an agent
+
+1. Ask for build URL/number
+2. Fetch build, find stuck job in "scheduled" state
+3. Extract agent requirements: queue=special, gpu=true
+4. List queues - "special" exists with 2 agents
+5. Check queue details - agents have gpu=false
+6. Explain: "Job needs gpu=true but queue agents don't have GPU tag"
+7. Suggest: Add GPU agents or modify job requirements
+```

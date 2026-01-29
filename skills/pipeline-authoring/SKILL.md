@@ -1,20 +1,57 @@
 ---
 name: pipeline-authoring
-description: Helps write and improve Buildkite pipeline configurations. Use when creating new pipelines, modifying existing ones, or optimizing pipeline structure.
+description: |
+  Helps write and improve Buildkite pipeline configurations. Use when user asks:
+  - "Help me write a pipeline"
+  - "Create a CI pipeline for X"
+  - "Add a step to my pipeline"
+  - "How do I do X in Buildkite?"
+  - "Optimize my pipeline"
+  - "Add matrix builds"
+  - "Set up parallel testing"
 ---
 
 # Pipeline Authoring
 
-You are helping write or improve Buildkite pipeline configurations.
+Help users write and improve Buildkite pipeline configurations.
+
+## Available MCP Tools
+
+| Tool | Purpose |
+|------|---------|
+| `buildkite_get_pipeline` | Get existing pipeline configuration |
+
+Also use file reading to examine existing `pipeline.yml` or `.buildkite/` files in the user's codebase.
+
+## Approach
+
+1. **Understand the goal**
+   - What workflow are they building?
+   - What language/framework?
+   - What's the deployment target?
+
+2. **Check existing configuration**
+   - Look for `.buildkite/pipeline.yml` or `pipeline.yml`
+   - Use `buildkite_get_pipeline` if they have an existing pipeline
+
+3. **Provide appropriate help**
+   - New pipeline: scaffold complete config
+   - Modification: suggest specific changes
+   - Question: explain with examples
+
+4. **Validate the result**
+   - Check dependencies make sense
+   - Verify conditions are correct
+   - Consider edge cases
 
 ## Pipeline Structure
 
 ```yaml
-# Environment variables for all steps
+# Environment for all steps
 env:
   NODE_ENV: "test"
 
-# Default agent requirements
+# Default agent configuration
 agents:
   queue: "default"
 
@@ -27,53 +64,48 @@ steps:
 ## Step Types
 
 ### Command Step
-Runs commands on an agent.
-
 ```yaml
-- label: ":test_tube: Run Tests"
+- label: ":test_tube: Tests"
   command: "npm test"
-  # Or multiple commands
+  # Multiple commands
   commands:
     - "npm ci"
     - "npm test"
+  # Artifacts to upload
   artifact_paths:
     - "coverage/**/*"
-    - "test-results/*.xml"
+  # Step-specific env
   env:
     CI: "true"
+  # Timeout
   timeout_in_minutes: 10
+  # Retry configuration
   retry:
     automatic:
-      - exit_status: -1  # Agent lost
+      - exit_status: -1
         limit: 2
-      - exit_status: "*"
-        limit: 1
 ```
 
 ### Wait Step
-Synchronization point between stages.
-
 ```yaml
 - wait
 
-# Or continue even if previous steps failed
+# Continue even if previous failed
 - wait:
     continue_on_failure: true
 ```
 
 ### Block Step
-Manual approval gate.
-
 ```yaml
-- block: ":rocket: Deploy to Production"
+- block: ":rocket: Deploy"
   prompt: "Ready to deploy?"
   branches: "main"
   fields:
     - text: "Reason"
-      key: "deploy-reason"
+      key: "reason"
       required: true
     - select: "Environment"
-      key: "deploy-env"
+      key: "env"
       options:
         - label: "Staging"
           value: "staging"
@@ -81,46 +113,30 @@ Manual approval gate.
           value: "production"
 ```
 
-### Input Step
-Collect input without blocking.
-
-```yaml
-- input: "Release Configuration"
-  fields:
-    - text: "Version"
-      key: "version"
-      default: "1.0.0"
-```
-
 ### Trigger Step
-Start another pipeline.
-
 ```yaml
 - trigger: "deploy-pipeline"
-  label: ":rocket: Trigger Deploy"
+  label: ":rocket: Deploy"
   build:
     branch: "${BUILDKITE_BRANCH}"
     commit: "${BUILDKITE_COMMIT}"
-    message: "Deploy: ${BUILDKITE_MESSAGE}"
     env:
       DEPLOY_ENV: "production"
 ```
 
 ### Group Step
-Organize related steps.
-
 ```yaml
 - group: ":test_tube: Tests"
   steps:
     - command: "npm run test:unit"
-      label: "Unit Tests"
-    - command: "npm run test:integration"
-      label: "Integration Tests"
+      label: "Unit"
+    - command: "npm run test:e2e"
+      label: "E2E"
 ```
 
-## Dependencies and Conditions
+## Dependencies
 
-### Explicit Dependencies
+### Explicit with Keys
 ```yaml
 steps:
   - command: "npm ci"
@@ -136,7 +152,7 @@ steps:
       - "test"
 ```
 
-### Allow Dependency Failures
+### Allow Dependency Failure
 ```yaml
 - command: "npm run report"
   depends_on:
@@ -144,24 +160,7 @@ steps:
       allow_failure: true
 ```
 
-### Conditional Steps
-```yaml
-# Only on main branch
-- command: "deploy.sh"
-  if: build.branch == "main"
-
-# Only for tags
-- command: "release.sh"
-  if: build.tag =~ /^v[0-9]+/
-
-# Skip for draft PRs
-- command: "full-test-suite.sh"
-  if: build.pull_request.draft != true
-
-# Based on changed files (requires diff plugin or metadata)
-- command: "build-docs.sh"
-  if: build.env.DOCS_CHANGED == "true"
-```
+## Conditionals
 
 ### Branch Filtering
 ```yaml
@@ -169,11 +168,29 @@ steps:
   branches: "main"
 
 # Multiple branches
-- command: "deploy-staging.sh"
+- command: "deploy.sh"
   branches:
     - "main"
-    - "develop"
     - "release/*"
+```
+
+### If Conditions
+```yaml
+# Only on main
+- command: "deploy.sh"
+  if: build.branch == "main"
+
+# Only for tags
+- command: "release.sh"
+  if: build.tag =~ /^v[0-9]+/
+
+# Skip draft PRs
+- command: "full-tests.sh"
+  if: build.pull_request.draft != true
+
+# Based on metadata
+- command: "deploy.sh"
+  if: build.meta_data.deploy == "true"
 ```
 
 ## Parallelism and Matrix
@@ -182,7 +199,8 @@ steps:
 ```yaml
 - command: "npm test"
   parallelism: 4
-  # Uses BUILDKITE_PARALLEL_JOB (0-3) and BUILDKITE_PARALLEL_JOB_COUNT
+  # Uses BUILDKITE_PARALLEL_JOB (0-3)
+  # and BUILDKITE_PARALLEL_JOB_COUNT (4)
 ```
 
 ### Matrix Builds
@@ -192,7 +210,11 @@ steps:
     setup:
       node: ["16", "18", "20"]
       os: ["linux", "macos"]
-    # Creates 6 jobs: all combinations
+  # Creates 6 jobs (all combinations)
+  agents:
+    os: "{{matrix.os}}"
+  env:
+    NODE_VERSION: "{{matrix.node}}"
 ```
 
 ### Matrix with Adjustments
@@ -204,14 +226,14 @@ steps:
     adjustments:
       - with:
           node: "20"
-        soft_fail: true  # Node 20 failures are non-blocking
+        soft_fail: true
 ```
 
 ## Best Practices
 
 ### Use Keys for Dependencies
 ```yaml
-# Good - explicit dependencies
+# Good - explicit
 - command: "build"
   key: "build"
 - command: "test"
@@ -220,70 +242,147 @@ steps:
 # Avoid - implicit ordering is fragile
 ```
 
-### Fail Fast with Soft Fails
+### Soft Fail for Non-Critical
 ```yaml
-# Non-critical steps shouldn't block
 - command: "npm run lint"
   soft_fail: true
 
 # Or specific exit codes
-- command: "npm run lint"
+- command: "npm audit"
   soft_fail:
     - exit_status: 1
 ```
 
-### Use Retry for Flaky Operations
+### Retry Flaky Operations
 ```yaml
 - command: "npm test"
   retry:
     automatic:
-      - exit_status: -1  # Agent issues
+      - exit_status: -1  # Agent lost
         limit: 2
-      - exit_status: 255  # SSH/network issues
+      - exit_status: 255 # Network
         limit: 2
+```
+
+### Always Set Timeouts
+```yaml
+- command: "npm test"
+  timeout_in_minutes: 15
 ```
 
 ### Cache Dependencies
 ```yaml
 - command: "npm test"
-  cache:
-    paths:
-      - "node_modules"
-    restore_keys:
-      - "v1-npm-{{ checksum 'package-lock.json' }}"
-      - "v1-npm-"
-    save_key: "v1-npm-{{ checksum 'package-lock.json' }}"
+  plugins:
+    - cache#v1.0.0:
+        paths:
+          - "node_modules"
+        key: "npm-{{ checksum 'package-lock.json' }}"
 ```
 
-### Use Timeouts
+## Common Patterns
+
+### Basic CI
 ```yaml
-# Prevent stuck jobs
-- command: "npm test"
-  timeout_in_minutes: 15
+steps:
+  - label: ":npm: Install"
+    command: "npm ci"
+    key: "install"
+
+  - label: ":eslint: Lint"
+    command: "npm run lint"
+    depends_on: "install"
+    soft_fail: true
+
+  - label: ":jest: Test"
+    command: "npm test"
+    depends_on: "install"
+
+  - label: ":package: Build"
+    command: "npm run build"
+    depends_on:
+      - "install"
+      - "test"
 ```
 
-### Notifications
+### Deploy Pipeline
 ```yaml
-notify:
-  - slack:
-      channels:
-        - "#builds"
-      conditions:
-        - branch: "main"
-        - state: "failed"
+steps:
+  - label: ":test_tube: Test"
+    command: "npm test"
+    key: "test"
+
+  - wait
+
+  - label: ":rocket: Deploy Staging"
+    command: "deploy.sh staging"
+    key: "staging"
+    branches: "main"
+
+  - block: ":rocket: Deploy Production?"
+    branches: "main"
+
+  - label: ":rocket: Deploy Production"
+    command: "deploy.sh production"
+    branches: "main"
 ```
 
-## When Helping Users
+### Monorepo
+```yaml
+steps:
+  - label: ":mag: Detect Changes"
+    command: "scripts/detect-changes.sh"
+    key: "detect"
 
-1. **Understand their goal** - What workflow are they trying to achieve?
-2. **Check existing pipelines** - Use `buildkite_get_pipeline` if they have one
-3. **Suggest improvements** - Parallelism, caching, better error handling
-4. **Validate logic** - Ensure dependencies and conditions make sense
-5. **Consider edge cases** - What happens on failure? On specific branches?
+  - label: ":package: Build API"
+    command: "npm run build -w api"
+    if: build.env.API_CHANGED == "true"
+    depends_on: "detect"
 
-## Important Notes
+  - label: ":package: Build Web"
+    command: "npm run build -w web"
+    if: build.env.WEB_CHANGED == "true"
+    depends_on: "detect"
+```
 
-- YAML indentation matters - use consistent 2-space indentation
-- Environment variables in strings need `${VAR}` syntax
-- Boolean conditions use Buildkite's expression syntax, not YAML booleans
-- Test complex pipelines with `buildkite-agent pipeline upload --dry-run`
+## Response Format
+
+When helping with pipelines:
+
+1. **Understand** what they're trying to achieve
+2. **Show** the YAML configuration
+3. **Explain** key parts and why they're configured that way
+4. **Validate** the logic makes sense
+5. **Suggest** improvements if applicable
+
+Always provide complete, copy-pasteable YAML.
+
+## Example Interaction
+
+```
+User: Help me set up CI for my Node.js project
+
+1. Ask about test framework, deploy targets, any special needs
+2. Provide scaffold:
+
+​```yaml
+steps:
+  - label: ":npm: Install"
+    command: "npm ci"
+    key: "install"
+
+  - label: ":jest: Test"
+    command: "npm test"
+    depends_on: "install"
+    artifact_paths:
+      - "coverage/**/*"
+
+  - label: ":package: Build"
+    command: "npm run build"
+    depends_on: "install"
+    artifact_paths:
+      - "dist/**/*"
+​```
+
+3. Explain the structure and ask if they need additions
+```
