@@ -6,24 +6,18 @@ A [Claude Code plugin](https://code.claude.com/docs/en/plugins) for working with
 
 ### Skills
 
-Claude automatically uses these capabilities when relevant:
+Claude automatically uses these capabilities when relevant. You can also invoke them directly:
 
-| Skill | Description |
-|-------|-------------|
-| **build-debugging** | Analyzes failed builds - reads logs, checks test results, identifies root causes |
-| **step-analysis** | Explains why steps were skipped, didn't run, or behaved unexpectedly |
-| **agent-troubleshooting** | Diagnoses agent issues - jobs stuck waiting, queue mismatches, connectivity problems |
-| **pipeline-authoring** | Helps write and improve pipeline configurations with best practices |
-
-### Slash Commands
-
-| Command | Description |
-|---------|-------------|
-| `/buildkite:debug <build>` | Debug a failed build |
-| `/buildkite:status [pipeline]` | Check recent build status |
-| `/buildkite:logs <build> [job]` | View job logs |
-| `/buildkite:trigger <pipeline>` | Trigger a new build |
-| `/buildkite:unblock <build>` | Unblock a waiting build |
+| Skill | Slash Command | Description |
+|-------|---------------|-------------|
+| **build-debugging** | `/buildkite:debug` | Analyzes failed builds - reads logs, checks test results, identifies root causes |
+| **build-status** | `/buildkite:status` | Shows recent build status for a pipeline with pass/fail state |
+| **log-retrieval** | `/buildkite:logs` | Retrieves and displays job logs with search capability |
+| **build-triggering** | `/buildkite:trigger` | Triggers new builds with branch/commit control |
+| **build-unblocking** | `/buildkite:unblock` | Unblocks builds waiting for manual approval |
+| **step-analysis** | - | Explains why steps were skipped, didn't run, or behaved unexpectedly |
+| **agent-troubleshooting** | - | Diagnoses agent issues - jobs stuck waiting, queue mismatches, connectivity problems |
+| **pipeline-authoring** | - | Helps write and improve pipeline configurations with best practices |
 
 ### MCP Server Integration
 
@@ -47,7 +41,7 @@ The plugin connects to Buildkite's [remote MCP server](https://buildkite.com/doc
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/mcncl/buildkite-claude-plugin.git
+   git clone https://github.com/mcncl/skill-buildkite.git
    ```
 
 2. Run Claude Code with the plugin:
@@ -88,6 +82,36 @@ or:
 > Show me recent builds for the deploy pipeline
 ```
 
+### View job logs
+
+```text
+> /buildkite:logs build-123
+
+or:
+
+> Show me the logs from the failed test job
+```
+
+### Trigger a build
+
+```text
+> /buildkite:trigger my-pipeline
+
+or:
+
+> Run CI on the main branch
+```
+
+### Unblock a deployment
+
+```text
+> /buildkite:unblock build-456
+
+or:
+
+> Approve the staging deployment
+```
+
 ### Understand why a step was skipped
 
 ```text
@@ -113,14 +137,16 @@ buildkite-claude-plugin/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest
 ├── .mcp.json                 # MCP server configuration
-├── commands/                 # Slash commands
-│   ├── debug.md
-│   ├── logs.md
-│   ├── status.md
-│   ├── trigger.md
-│   └── unblock.md
 ├── skills/                   # AI capabilities
 │   ├── build-debugging/
+│   │   └── SKILL.md
+│   ├── build-status/
+│   │   └── SKILL.md
+│   ├── log-retrieval/
+│   │   └── SKILL.md
+│   ├── build-triggering/
+│   │   └── SKILL.md
+│   ├── build-unblocking/
 │   │   └── SKILL.md
 │   ├── step-analysis/
 │   │   └── SKILL.md
@@ -154,21 +180,6 @@ Contributions are welcome! This plugin is designed to be modular and extensible.
    # My New Skill
 
    Instructions for Claude on how to use this skill...
-   ```
-
-### Adding a New Command
-
-1. Create a new `.md` file in `commands/`:
-
-   ```markdown
-   ---
-   description: Short description shown in command list
-   ---
-
-   # Command Name
-
-   Instructions for what the command should do...
-   Use $ARGUMENTS to access user input.
    ```
 
 ## License
