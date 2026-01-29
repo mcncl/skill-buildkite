@@ -56,7 +56,7 @@ Parse from `$ARGUMENTS` or user's message:
 
 ## Output Format
 
-```
+```text
 ## Logs: "Run Tests" (job abc-123)
 
 ​```
@@ -73,7 +73,7 @@ Showing last 50 lines. Full log is 2,847 lines.
 
 When searching:
 
-```
+```text
 ## Search: "error" in build 456
 
 Found 3 matches:
@@ -101,7 +101,7 @@ Found 3 matches:
 
 ## Example Interaction
 
-```
+```text
 User: Show me the logs from the failed test
 
 1. Get build (from context or ask)

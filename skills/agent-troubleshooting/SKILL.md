@@ -81,7 +81,7 @@ agents:
 ```
 
 **Diagnosis**:
-```
+```text
 Job requires: queue=deploy
 Available queues: default (5 agents), build (10 agents)
 ❌ No "deploy" queue exists
@@ -105,7 +105,7 @@ agents:
 ```
 
 **Diagnosis**:
-```
+```text
 Job requires: queue=default, docker=true, os=linux
 Available agents in default:
   - agent-1: docker=true, os=macos
@@ -121,7 +121,7 @@ Available agents in default:
 **Cause**: Queue exists but no agents connected
 
 **Diagnosis**:
-```
+```text
 Job requires: queue=deploy
 Queue "deploy" exists but has 0 connected agents
 ```
@@ -134,7 +134,7 @@ Queue "deploy" exists but has 0 connected agents
 **Cause**: Agents exist but at capacity
 
 **Diagnosis**:
-```
+```text
 Job requires: queue=default
 Queue "default": 3 agents, 15 jobs waiting
 Average wait time: 12 minutes
@@ -157,7 +157,7 @@ Average wait time: 12 minutes
 
 ## Response Format
 
-```
+````text
 ## Agent Issue Diagnosed
 
 **Build**: #456
@@ -184,7 +184,7 @@ agents:
 ```
 
 **Long-term**: Create a `deploy` queue and add dedicated agents for deployments.
-```
+````
 
 ## Diagnostic Commands
 
@@ -203,7 +203,7 @@ journalctl -u buildkite-agent
 
 ## Example Interaction
 
-```
+```text
 User: My build is stuck waiting for an agent
 
 1. Ask for build URL/number

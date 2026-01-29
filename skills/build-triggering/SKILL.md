@@ -61,7 +61,7 @@ Parse from `$ARGUMENTS` or user's message:
 ## Safety Requirements
 
 ### Always Confirm
-```
+```text
 I'll trigger a build for **my-org/my-pipeline**:
 - Branch: `main`
 - Commit: `abc123` (latest)
@@ -73,7 +73,7 @@ Proceed? (yes/no)
 
 If pipeline name contains: `deploy`, `prod`, `production`, `release`
 
-```
+```text
 ⚠️ This appears to be a deployment pipeline.
 
 I'll trigger **my-org/deploy-production**:
@@ -87,7 +87,7 @@ This may deploy to production. Please confirm by typing "deploy" to proceed.
 
 If setting env vars, show them clearly:
 
-```
+```text
 Build will include these environment variables:
 - DEPLOY_ENV=staging
 - SKIP_TESTS=true
@@ -108,7 +108,7 @@ Proceed?
 
 After triggering:
 
-```
+```text
 ✅ Build triggered successfully!
 
 **Build #457**: https://buildkite.com/my-org/my-pipeline/builds/457
@@ -121,7 +121,7 @@ The build is now queued and will start when an agent is available.
 
 ## Example Interaction
 
-```
+```text
 User: Run CI on my branch
 
 1. Identify pipeline (from context or ask)

@@ -53,7 +53,7 @@ If no pipeline specified and in a git repo, try to match against Buildkite pipel
 
 Present as a scannable table:
 
-```
+```text
 Pipeline: my-org/my-pipeline
 
 | # | State | Branch | Commit | Age | Duration |
@@ -85,7 +85,7 @@ Pipeline: my-org/my-pipeline
 
 ## Example Interaction
 
-```
+```text
 User: Is main green?
 
 1. Identify pipeline (from context or ask)

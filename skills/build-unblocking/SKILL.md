@@ -81,7 +81,7 @@ Block steps may require input:
 
 When fields are required, collect them:
 
-```
+```text
 This block step requires input:
 
 1. **Reason for deployment** (required):
@@ -95,7 +95,7 @@ This block step requires input:
 ## Safety Requirements
 
 ### Standard Block
-```
+```text
 I'll unblock **"Deploy to Staging"** in build #456.
 
 This will continue the pipeline and run the deployment steps.
@@ -104,7 +104,7 @@ Proceed? (yes/no)
 ```
 
 ### Production/Deploy Gates
-```
+```text
 ⚠️ This is a production deployment gate.
 
 Unblocking **"Deploy to Production"** in build #456 will:
@@ -118,7 +118,7 @@ Type "deploy" to confirm.
 
 After unblocking:
 
-```
+```text
 ✅ Build unblocked!
 
 **Build #456**: Continuing...
@@ -135,7 +135,7 @@ If user doesn't specify a build:
 1. Use `buildkite_list_builds` filtered to blocked state
 2. Show recent blocked builds:
 
-```
+```text
 Found 2 blocked builds:
 
 1. **#456** - my-pipeline (main)
@@ -151,7 +151,7 @@ Which build would you like to unblock?
 
 ## Example Interaction
 
-```
+```text
 User: Approve the staging deployment
 
 1. Find recent builds with blocked state

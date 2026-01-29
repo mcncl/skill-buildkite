@@ -359,7 +359,7 @@ Always provide complete, copy-pasteable YAML.
 
 ## Example Interaction
 
-```
+```text
 User: Help me set up CI for my Node.js project
 
 1. Ask about test framework, deploy targets, any special needs

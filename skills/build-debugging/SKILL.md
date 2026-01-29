@@ -91,7 +91,7 @@ If no build specified, ask the user which build to debug.
 
 ## Example Interaction
 
-```
+```text
 User: Why did build 456 fail?
 
 1. Fetch build 456 with buildkite_get_build

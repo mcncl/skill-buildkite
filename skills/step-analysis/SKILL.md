@@ -131,7 +131,7 @@ steps:
 
 ## Response Format
 
-```
+```text
 ## Why "Deploy to Production" was skipped
 
 **State**: skipped
@@ -172,7 +172,7 @@ branch, either:
 
 ## Example Interaction
 
-```
+```text
 User: Why didn't the deploy step run in build 456?
 
 1. Fetch build 456
