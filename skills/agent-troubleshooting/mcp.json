@@ -1,7 +1,7 @@
 {
   "buildkite": {
-    "type": "http",
-    "url": "https://mcp.buildkite.com/mcp",
+    "command": "npx",
+    "args": ["-y", "mcp-remote", "https://mcp.buildkite.com/mcp"],
     "includeTools": [
       "get_build",
       "list_clusters",
