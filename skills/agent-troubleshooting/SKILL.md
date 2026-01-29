@@ -1,27 +1,30 @@
 ---
 name: agent-troubleshooting
-description: |
-  Troubleshoots Buildkite agent issues. Use when user asks:
-  - "My build is stuck waiting for an agent"
-  - "Jobs aren't being picked up"
-  - "Why is my build stuck in scheduled?"
-  - "Agent not running my job"
-  - "Queue issues"
-  - "No agents available"
+description: "Diagnoses Buildkite agent issues like stuck jobs and queue mismatches."
 ---
 
 # Agent Troubleshooting
 
 Diagnose why jobs aren't being picked up by agents.
 
+## When to use
+
+- "My build is stuck waiting for an agent"
+- "Jobs aren't being picked up"
+- "Why is my build stuck in scheduled?"
+- "Agent not running my job"
+- "Queue issues"
+- "No agents available"
+
 ## Available MCP Tools
 
 | Tool | Purpose |
 |------|---------|
-| `buildkite_get_build` | Get job details including agent requirements |
-| `buildkite_list_clusters` | List available clusters |
-| `buildkite_list_cluster_queues` | List queues in a cluster |
-| `buildkite_get_cluster_queue` | Get queue stats (agent count, jobs waiting) |
+| `get_build` | Get job details including agent requirements |
+| `list_clusters` | List available clusters |
+| `get_cluster` | Get detailed cluster information |
+| `list_cluster_queues` | List queues in a cluster |
+| `get_cluster_queue` | Get queue stats (agent count, jobs waiting) |
 
 ## Input Parsing
 

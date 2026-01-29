@@ -1,0 +1,17 @@
+{
+  "buildkite": {
+    "type": "http",
+    "url": "https://mcp.buildkite.com/mcp",
+    "includeTools": [
+      "get_build",
+      "read_logs",
+      "search_logs",
+      "tail_logs",
+      "get_build_test_engine_runs",
+      "get_failed_executions",
+      "list_artifacts_for_build",
+      "get_artifact",
+      "list_annotations"
+    ]
+  }
+}

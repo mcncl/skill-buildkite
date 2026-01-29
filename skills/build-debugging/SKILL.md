@@ -1,30 +1,34 @@
 ---
 name: build-debugging
-description: |
-  Analyzes failed Buildkite builds to identify root causes. Use when user asks:
-  - "Why did build X fail?"
-  - "Debug this build"
-  - "What's wrong with my CI?"
-  - "Fix this build failure"
-  - "Help me understand this error"
-  - /buildkite:debug
+description: "Analyzes failed Buildkite builds to identify root causes and provide fixes."
 ---
 
 # Build Debugging
 
 Analyze failed Buildkite builds to identify root causes and provide actionable fixes.
 
+## When to use
+
+- "Why did build X fail?"
+- "Debug this build"
+- "What's wrong with my CI?"
+- "Fix this build failure"
+- "Help me understand this error"
+- `/buildkite:debug`
+
 ## Available MCP Tools
 
 | Tool | Purpose |
 |------|---------|
-| `buildkite_get_build` | Fetch build details including all jobs and their states |
-| `buildkite_read_logs` | Get full log output for a specific job |
-| `buildkite_search_logs` | Search for patterns within job logs |
-| `buildkite_get_build_test_engine_runs` | Get Test Engine results for the build |
-| `buildkite_get_failed_test_executions` | Get details of failed tests |
-| `buildkite_list_artifacts_for_build` | List uploaded artifacts |
-| `buildkite_get_artifact` | Download a specific artifact |
+| `get_build` | Fetch build details including all jobs and their states |
+| `read_logs` | Get full log output for a specific job |
+| `search_logs` | Search for patterns within job logs |
+| `tail_logs` | Show last N log entries |
+| `get_build_test_engine_runs` | Get Test Engine results for the build |
+| `get_failed_executions` | Get details of failed tests |
+| `list_artifacts_for_build` | List uploaded artifacts |
+| `get_artifact` | Download a specific artifact |
+| `list_annotations` | List build annotations |
 
 ## Input Parsing
 

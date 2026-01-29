@@ -1,26 +1,28 @@
 ---
 name: step-analysis
-description: |
-  Analyzes why Buildkite pipeline steps behaved unexpectedly. Use when user asks:
-  - "Why was this step skipped?"
-  - "Why didn't the deploy run?"
-  - "Why is this step waiting?"
-  - "What's blocking this step?"
-  - "Why did this step not run?"
-  - "Explain the step dependencies"
+description: "Explains why Buildkite pipeline steps were skipped, didn't run, or behaved unexpectedly."
 ---
 
 # Step Analysis
 
 Analyze why pipeline steps were skipped, didn't run, or behaved unexpectedly.
 
+## When to use
+
+- "Why was this step skipped?"
+- "Why didn't the deploy run?"
+- "Why is this step waiting?"
+- "What's blocking this step?"
+- "Why did this step not run?"
+- "Explain the step dependencies"
+
 ## Available MCP Tools
 
 | Tool | Purpose |
 |------|---------|
-| `buildkite_get_build` | Get build with all job states |
-| `buildkite_get_pipeline` | Get pipeline YAML configuration |
-| `buildkite_read_logs` | Check logs for clues about conditions |
+| `get_build` | Get build with all job states |
+| `get_pipeline` | Get pipeline YAML configuration |
+| `read_logs` | Check logs for clues about conditions |
 
 ## Input Parsing
 

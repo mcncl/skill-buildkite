@@ -1,27 +1,29 @@
 ---
 name: build-status
-description: |
-  Shows recent build status for Buildkite pipelines. Use when user asks:
-  - "Show me recent builds"
-  - "What's the status of the pipeline?"
-  - "Are builds passing?"
-  - "How's CI doing?"
-  - "List builds for X"
-  - "Is main green?"
-  - /buildkite:status
+description: "Shows recent Buildkite build status for a pipeline with pass/fail visibility."
 ---
 
 # Build Status
 
 Show recent build status for a pipeline with clear pass/fail visibility.
 
+## When to use
+
+- "Show me recent builds"
+- "What's the status of the pipeline?"
+- "Are builds passing?"
+- "How's CI doing?"
+- "List builds for X"
+- "Is main green?"
+- /buildkite:status
+
 ## Available MCP Tools
 
 | Tool | Purpose |
 |------|---------|
-| `buildkite_list_builds` | List recent builds with optional filters |
-| `buildkite_get_build` | Get detailed info for a specific build |
-| `buildkite_get_pipeline` | Get pipeline configuration and metadata |
+| `list_builds` | List recent builds with optional filters |
+| `get_build` | Get detailed info for a specific build |
+| `get_pipeline` | Get pipeline configuration and metadata |
 
 ## Input Parsing
 

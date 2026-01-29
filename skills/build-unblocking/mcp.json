@@ -1,0 +1,11 @@
+{
+  "buildkite": {
+    "type": "http",
+    "url": "https://mcp.buildkite.com/mcp",
+    "includeTools": [
+      "get_build",
+      "unblock_job",
+      "list_builds"
+    ]
+  }
+}

@@ -1,27 +1,30 @@
 ---
 name: build-triggering
-description: |
-  Triggers new Buildkite builds. Use when user asks:
-  - "Trigger a build"
-  - "Run CI"
-  - "Start a build for X"
-  - "Rebuild this"
-  - "Deploy to staging"
-  - "Kick off the pipeline"
-  - /buildkite:trigger
+description: "Triggers new Buildkite builds with branch/commit control and safety confirmations."
 ---
 
 # Build Triggering
 
 Trigger new Buildkite builds with appropriate safety checks.
 
+## When to use
+
+- "Trigger a build"
+- "Run CI"
+- "Start a build for X"
+- "Rebuild this"
+- "Deploy to staging"
+- "Kick off the pipeline"
+- /buildkite:trigger
+
 ## Available MCP Tools
 
 | Tool | Purpose |
 |------|---------|
-| `buildkite_get_pipeline` | Verify pipeline exists and get details |
-| `buildkite_create_build` | Trigger a new build |
-| `buildkite_list_builds` | Check recent builds (optional) |
+| `get_pipeline` | Verify pipeline exists and get details |
+| `list_pipelines` | List all pipelines in the organization |
+| `create_build` | Trigger a new build |
+| `list_builds` | Check recent builds (optional) |
 
 ## Input Parsing
 

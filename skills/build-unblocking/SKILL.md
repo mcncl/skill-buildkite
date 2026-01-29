@@ -1,26 +1,28 @@
 ---
 name: build-unblocking
-description: |
-  Unblocks Buildkite builds waiting for manual approval. Use when user asks:
-  - "Unblock the build"
-  - "Approve the deployment"
-  - "Continue the pipeline"
-  - "Unblock build X"
-  - "Approve the staging deploy"
-  - /buildkite:unblock
+description: "Unblocks Buildkite builds waiting for manual approval."
 ---
 
 # Build Unblocking
 
 Unblock builds that are waiting for manual approval.
 
+## When to use
+
+- "Unblock the build"
+- "Approve the deployment"
+- "Continue the pipeline"
+- "Unblock build X"
+- "Approve the staging deploy"
+- /buildkite:unblock
+
 ## Available MCP Tools
 
 | Tool | Purpose |
 |------|---------|
-| `buildkite_get_build` | Get build details and find blocked jobs |
-| `buildkite_unblock_job` | Unblock a specific job |
-| `buildkite_list_builds` | Find builds with blocked steps |
+| `get_build` | Get build details and find blocked jobs |
+| `unblock_job` | Unblock a specific job |
+| `list_builds` | Find builds with blocked steps |
 
 ## Input Parsing
 

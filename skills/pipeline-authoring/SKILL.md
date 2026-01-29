@@ -1,25 +1,28 @@
 ---
 name: pipeline-authoring
-description: |
-  Helps write and improve Buildkite pipeline configurations. Use when user asks:
-  - "Help me write a pipeline"
-  - "Create a CI pipeline for X"
-  - "Add a step to my pipeline"
-  - "How do I do X in Buildkite?"
-  - "Optimize my pipeline"
-  - "Add matrix builds"
-  - "Set up parallel testing"
+description: "Helps write and improve Buildkite pipeline YAML configurations."
 ---
 
 # Pipeline Authoring
 
 Help users write and improve Buildkite pipeline configurations.
 
+## When to use
+
+- "Help me write a pipeline"
+- "Create a CI pipeline for X"
+- "Add a step to my pipeline"
+- "How do I do X in Buildkite?"
+- "Optimize my pipeline"
+- "Add matrix builds"
+- "Set up parallel testing"
+
 ## Available MCP Tools
 
 | Tool | Purpose |
 |------|---------|
-| `buildkite_get_pipeline` | Get existing pipeline configuration |
+| `get_pipeline` | Get existing pipeline configuration |
+| `list_pipelines` | List all pipelines in the organization |
 
 Also use file reading to examine existing `pipeline.yml` or `.buildkite/` files in the user's codebase.
 

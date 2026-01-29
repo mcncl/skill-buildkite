@@ -1,0 +1,12 @@
+{
+  "buildkite": {
+    "type": "http",
+    "url": "https://mcp.buildkite.com/mcp",
+    "includeTools": [
+      "get_pipeline",
+      "list_pipelines",
+      "create_build",
+      "list_builds"
+    ]
+  }
+}

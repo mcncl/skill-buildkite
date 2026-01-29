@@ -1,28 +1,29 @@
 ---
 name: log-retrieval
-description: |
-  Retrieves and displays job logs from Buildkite. Use when user asks:
-  - "Show me the logs"
-  - "What did the build output?"
-  - "Get the logs from job X"
-  - "Search the logs for Y"
-  - "What happened in the test step?"
-  - /buildkite:logs
-
-  Note: For debugging failures, use build-debugging instead. Use this skill for viewing/searching logs without full failure analysis.
+description: "Retrieves and displays Buildkite job logs. For debugging failures, use build-debugging instead."
 ---
 
 # Log Retrieval
 
 Retrieve and display job logs from Buildkite builds.
 
+## When to use
+
+- "Show me the logs"
+- "What did the build output?"
+- "Get the logs from job X"
+- "Search the logs for Y"
+- "What happened in the test step?"
+- `/buildkite:logs`
+
 ## Available MCP Tools
 
 | Tool | Purpose |
 |------|---------|
-| `buildkite_get_build` | Get build details to find job IDs |
-| `buildkite_read_logs` | Get full log output for a job |
-| `buildkite_search_logs` | Search for patterns within logs |
+| `get_build` | Get build details to find job IDs |
+| `read_logs` | Get full log output for a job |
+| `search_logs` | Search for patterns within logs |
+| `tail_logs` | Show last N log entries |
 
 ## Input Parsing
 

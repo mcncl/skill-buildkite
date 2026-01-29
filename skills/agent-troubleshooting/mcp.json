@@ -1,0 +1,13 @@
+{
+  "buildkite": {
+    "type": "http",
+    "url": "https://mcp.buildkite.com/mcp",
+    "includeTools": [
+      "get_build",
+      "list_clusters",
+      "get_cluster",
+      "list_cluster_queues",
+      "get_cluster_queue"
+    ]
+  }
+}
