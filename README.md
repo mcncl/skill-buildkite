@@ -1,6 +1,6 @@
-# Buildkite Claude Code Plugin
+# Buildkite Skills
 
-A [Claude Code plugin](https://code.claude.com/docs/en/plugins) for working with [Buildkite](https://buildkite.com) CI/CD pipelines. Debug failed builds, understand why steps didn't run, troubleshoot agent issues, and author pipelines.
+AI skills for working with [Buildkite](https://buildkite.com) CI/CD pipelines. Debug failed builds, understand why steps didn't run, troubleshoot agent issues, and author pipelines.
 
 ## Features
 
@@ -21,7 +21,7 @@ Claude automatically uses these capabilities when relevant. You can also invoke 
 
 ### MCP Server Integration
 
-The plugin connects to Buildkite's [remote MCP server](https://buildkite.com/docs/apis/mcp-server) which provides tools for:
+These skills connect to Buildkite's [remote MCP server](https://buildkite.com/docs/apis/mcp-server) which provides tools for:
 
 - Listing and managing pipelines
 - Fetching builds, jobs, and logs
@@ -33,7 +33,7 @@ The plugin connects to Buildkite's [remote MCP server](https://buildkite.com/doc
 
 ### Prerequisites
 
-- [Claude Code](https://claude.com/claude-code) CLI installed
+- An AI tool that supports skills (e.g., [Claude Code](https://claude.ai/code))
 - A Buildkite account
 
 ### Setup
@@ -44,17 +44,17 @@ The plugin connects to Buildkite's [remote MCP server](https://buildkite.com/doc
    git clone https://github.com/mcncl/skill-buildkite.git
    ```
 
-2. Run Claude Code with the plugin:
+2. Configure your AI tool to use this skill directory. For Claude Code:
 
    ```bash
-   claude --plugin-dir /path/to/buildkite-claude-plugin
+   claude --skill-dir /path/to/skill-buildkite
    ```
 
-3. Run `/mcp` to authenticate with Buildkite via OAuth in your browser.
+3. Authenticate with Buildkite via OAuth when prompted.
 
 ### Authentication
 
-This plugin uses Buildkite's [remote MCP server](https://buildkite.com/docs/apis/mcp-server/remote/configuring-ai-tools) with OAuth authentication. No API tokens or Docker required.
+These skills use Buildkite's [remote MCP server](https://buildkite.com/docs/apis/mcp-server/remote/configuring-ai-tools) with OAuth authentication. No API tokens or Docker required.
 
 - OAuth tokens are valid for 12 hours
 - Refresh tokens are valid for 7 days
@@ -133,11 +133,9 @@ or:
 ## Project Structure
 
 ```text
-buildkite-claude-plugin/
-├── .claude-plugin/
-│   └── plugin.json          # Plugin manifest
-├── .mcp.json                 # MCP server configuration
-├── skills/                   # AI capabilities
+skill-buildkite/
+├── mcp.json                 # MCP server configuration
+├── skills/                   # AI skills
 │   ├── build-debugging/
 │   │   └── SKILL.md
 │   ├── build-status/
@@ -159,7 +157,7 @@ buildkite-claude-plugin/
 
 ## Contributing
 
-Contributions are welcome! This plugin is designed to be modular and extensible.
+Contributions are welcome! This project is designed to be modular and extensible.
 
 ### Adding a New Skill
 
